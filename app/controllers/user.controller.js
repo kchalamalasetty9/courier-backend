@@ -23,6 +23,10 @@ exports.create = async (req, res) => {
     const error = new Error("Password cannot be empty for user!");
     error.statusCode = 400;
     throw error;
+  } else if (req.body.userType === undefined) {
+    const error = new Error("UserType cannot be empty for user!");
+    error.statusCode = 400;
+    throw error;
   }
 
   // find by email
@@ -46,8 +50,10 @@ exports.create = async (req, res) => {
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email,
+          userType: req.body.userType,
           password: hash,
           salt: salt,
+
         };
 
         // Save User in the database
