@@ -1,4 +1,4 @@
-const Ticket = require('../models/Ticket');
+const Ticket = require('../models/ticket.model');
 
 // Create a ticket
 exports.create = async (req, res) => {

@@ -1,4 +1,4 @@
-const DeliveryInfo = require('../models/DeliveryInfo');
+const DeliveryInfo = require('../models/deliveryInfo.model');
 
 // Create a delivery info
 exports.create = async (req, res) => {

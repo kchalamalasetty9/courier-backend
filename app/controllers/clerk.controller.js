@@ -1,4 +1,4 @@
-const Clerk = require('../models/Clerk');
+const Clerk = require('../models/clerk.model');
 
 // Create a clerk
 exports.create = async (req, res) => {

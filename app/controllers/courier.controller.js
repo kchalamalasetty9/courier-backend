@@ -1,4 +1,4 @@
-const Courier = require('../models/Courier');
+const Courier = require('../models/courier.model');
 
 // Create a courier
 exports.create = async (req, res) => {
