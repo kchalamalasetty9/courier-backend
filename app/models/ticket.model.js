@@ -1,27 +1,27 @@
 module.exports = (sequelize, Sequelize) => {
-  const Ticket = sequelize.define("Ticket", {
+  const Ticket = sequelize.define("ticket", {
     ticketId: {
       type: Sequelize.INTEGER,
       primaryKey: true,
       autoIncrement: true,
     },
     orderedBy: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       allowNull: false,
     },
     courierNumber: {
-      type: Sequelize.STRING,
-      allowNull: true,
-    },
-    deliveryInfoId: {
       type: Sequelize.INTEGER,
-      allowNull: false,
+      allowNull: true,
     },
     estimatedDeliveryTime: {
       type: Sequelize.DATE,
       allowNull: true,
     },
     quotedPrice: {
+      type: Sequelize.FLOAT,
+      allowNull: true,
+    },
+    orderedTo: {
       type: Sequelize.FLOAT,
       allowNull: true,
     },

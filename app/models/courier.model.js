@@ -1,8 +1,9 @@
 module.exports = (sequelize, Sequelize) => {
   const Courier = sequelize.define("courier", {
     courierNumber: {
-      type: Sequelize.STRING,
+      type: Sequelize.INTEGER,
       primaryKey: true,
+      autoIncrement: true,
     },
     courierName: {
       type: Sequelize.STRING,
@@ -11,3 +12,4 @@ module.exports = (sequelize, Sequelize) => {
   });
   return Courier;
 };
+
