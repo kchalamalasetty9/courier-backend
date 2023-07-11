@@ -3,6 +3,8 @@ const User = db.user;
 const Session = db.session;
 const Op = db.Sequelize.Op;
 const { encrypt, getSalt, hashPassword } = require("../authentication/crypto");
+const ClerkController = require("./clerk.controller.js");
+const CourierController = require("./courier.controller.js");
 
 // Create and Save a new User
 exports.create = async (req, res) => {
@@ -53,7 +55,6 @@ exports.create = async (req, res) => {
           userType: req.body.userType,
           password: hash,
           salt: salt,
-
         };
 
         // Save User in the database
@@ -80,6 +81,12 @@ exports.create = async (req, res) => {
                 id: user.id,
                 token: token,
               };
+
+              if (req.body.userType === "clerk") {
+                await ClerkController.create(req, res);
+              } else if (req.body.userType === "courier") {
+                await CourierController.create(req, res);
+              }
               res.send(userInfo);
             });
           })

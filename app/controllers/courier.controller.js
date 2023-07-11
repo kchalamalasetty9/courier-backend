@@ -1,4 +1,5 @@
-const Courier = require('../models/courier.model');
+const db = require("../models");
+const Courier = db.courier;
 
 // Create a courier
 exports.create = async (req, res) => {
@@ -14,7 +15,7 @@ exports.create = async (req, res) => {
 // Read all couriers
 exports.readAll = async (req, res) => {
   try {
-    const couriers = await Courier.findAll();
+    const couriers = await Courier.findAll({ where: null });
     res.json(couriers);
   } catch (err) {
     console.error(err);

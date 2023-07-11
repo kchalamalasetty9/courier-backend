@@ -1,4 +1,5 @@
-const Customer = require('../models/customer.model');
+const db = require("../models");
+const Customer = db.customer;
 // Create a customer
 exports.create = async (req, res) => {
   try {

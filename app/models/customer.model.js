@@ -10,7 +10,11 @@ const Customer = sequelize.define('customer', {
     type: Sequelize.STRING,
     allowNull: false,
   },
-  Location: {
+  avenue: {
+    type: Sequelize.STRING,
+    allowNull: false,
+  },
+  street: {
     type: Sequelize.STRING,
     allowNull: false,
   },
