@@ -1,9 +1,11 @@
-const Clerk = require('../models/clerk.model');
+const db = require("../models");
+const Clerk = db.clerk;
 
 // Create a clerk
 exports.create = async (req, res) => {
   try {
-    const clerk = await Clerk.create(req.body);
+    const clerkName = req.body.firstName + " " + req.body.lastName
+    const clerk = await Clerk.create({...req.body, clerkName});
     res.json(clerk);
   } catch (err) {
     console.error(err);

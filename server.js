@@ -32,8 +32,8 @@ require("./app/routes/user.routes")(app);
 require("./app/routes/clerk.routes")(app);
 require("./app/routes/courier.routes")(app);
 require("./app/routes/customer.routes")(app);
-require("./app/routes/deliveryInfo.routes")(app);
 require("./app/routes/ticket.routes")(app);
+require("./app/routes/userRegistration.routes")(app);
 
 // set port, listen for requests
 const PORT = process.env.PORT || 3200;
