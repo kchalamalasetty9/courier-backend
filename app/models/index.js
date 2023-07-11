@@ -15,10 +15,10 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 db.session = require("./session.model.js")(sequelize, Sequelize);
 db.user = require("./user.model.js")(sequelize, Sequelize);
+db.userRegistration = require("./userRegistration.model.js")(sequelize, Sequelize);
 db.ticket = require("./ticket.model.js")(sequelize,Sequelize);
 db.customer = require("./customer.model.js")(sequelize,Sequelize);
 db.courier = require("./courier.model.js")(sequelize,Sequelize);
-db.deliveryInfo = require("./deliveryInfo.model.js")(sequelize,Sequelize);
 db.clerk = require("./clerk.model.js")(sequelize,Sequelize);
 
 // foreign key for session
@@ -34,8 +34,6 @@ db.session.belongsTo(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
 
-db.ticket.belongsTo(db.deliveryInfo, { foreignKey: 'deliveryInfoId' });
-db.deliveryInfo.hasOne(db.ticket, { foreignKey: 'deliveryInfoId' });
 
 db.ticket.belongsTo(db.customer, { foreignKey: 'orderedBy', as: 'customer' });
 db.customer.hasMany(db.ticket, { foreignKey: 'orderedBy', as: 'tickets' });
