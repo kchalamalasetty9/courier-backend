@@ -25,6 +25,10 @@ module.exports = (sequelize, Sequelize) => {
     userType: { // admin, courier, clerk
       type: Sequelize.STRING,
       allowNull: false,
+    },
+    status: { // accepted, rejected, pending
+      type: Sequelize.STRING,
+      allowNull: false,
     }
   });
 
