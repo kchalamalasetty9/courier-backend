@@ -31,11 +31,6 @@ authenticate = async (req, res, require = true) => {
           console.log(error);
         });
       if (user != null) {
-        if (user.status !== 'accepted'){
-          return res.status(401).send({
-            message: "Account Status Pending / Rejected, Contact admin for more info.",
-          });
-        }
         let hash = await hashPassword(password, user.salt);
         if (Buffer.compare(user.password, hash) !== 0) {
           return res.status(401).send({
