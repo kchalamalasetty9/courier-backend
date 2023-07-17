@@ -1,6 +1,7 @@
 const db = require("../models");
 const User = db.user;
 const Session = db.session;
+const Courier = db.courier;
 const Op = db.Sequelize.Op;
 const { encrypt, getSalt, hashPassword } = require("../authentication/crypto");
 
@@ -21,6 +22,10 @@ exports.create = async (req, res) => {
     throw error;
   } else if (req.body.password === undefined) {
     const error = new Error("Password cannot be empty for user!");
+    error.statusCode = 400;
+    throw error;
+  } else if (req.body.userType === undefined) {
+    const error = new Error("UserType cannot be empty for user!");
     error.statusCode = 400;
     throw error;
   }
@@ -46,8 +51,10 @@ exports.create = async (req, res) => {
           firstName: req.body.firstName,
           lastName: req.body.lastName,
           email: req.body.email,
+          userType: req.body.userType,
           password: hash,
           salt: salt,
+          status: req.body.userType === 'admin'? 'accepted' : 'pending',
         };
 
         // Save User in the database
@@ -107,6 +114,20 @@ exports.findAll = (req, res) => {
     });
 };
 
+// Retrieve all Users from the database.
+exports.findAllPending = (req, res) => {
+
+  User.findAll({ where: { status: { [Op.eq]: 'pending' } } })
+    .then((data) => {
+      res.send(data);
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Some error occurred while retrieving users.",
+      });
+    });
+};
+
 // Find a single User with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
@@ -154,6 +175,76 @@ exports.findByEmail = (req, res) => {
     });
 };
 
+// Update a User by the id in the request
+exports.accept = (req, res) => {
+  const id = req.params.id;
+  let user = {};
+  User.findByPk(id)
+    .then((data) => {
+      if (data) {
+        user = data
+      } else {
+        res.status(404).send({
+          message: `Cannot find User with id = ${id}.`,
+        });
+      }
+    })
+
+  User.update({status: 'accepted'}, {
+    where: { id: id },
+  })
+    .then(async (number) => {
+      if (number == 1) {
+        // TODO: if courier add it in courier table
+        try {
+          const courier = await Courier.create({
+            courierName: user.firstName + ' ' + user.lastName,
+            userId: user.id,
+          });
+        } catch (err) {
+          console.error(err);
+          throw new Error('Failed to create courier' )
+        }
+        
+        res.send({
+          message: "User was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update User with id = ${id}. Maybe User was not found or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error updating User with id =" + id,
+      });
+    });
+};
+// Update a User by the id in the request
+exports.decline = (req, res) => {
+  const id = req.params.id;
+
+  User.update({status: 'rejected'}, {
+    where: { id: id },
+  })
+    .then((number) => {
+      if (number == 1) {
+        res.send({
+          message: "User was updated successfully.",
+        });
+      } else {
+        res.send({
+          message: `Cannot update User with id = ${id}. Maybe User was not found or req.body is empty!`,
+        });
+      }
+    })
+    .catch((err) => {
+      res.status(500).send({
+        message: err.message || "Error updating User with id =" + id,
+      });
+    });
+};
 // Update a User by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;
