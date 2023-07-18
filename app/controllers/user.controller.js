@@ -54,7 +54,7 @@ exports.create = async (req, res) => {
           userType: req.body.userType,
           password: hash,
           salt: salt,
-          status: req.body.userType === 'admin'? 'accepted' : 'pending',
+          status: req.body.userType === "admin" ? "accepted" : "pending",
         };
 
         // Save User in the database
@@ -116,8 +116,7 @@ exports.findAll = (req, res) => {
 
 // Retrieve all Users from the database.
 exports.findAllPending = (req, res) => {
-
-  User.findAll({ where: { status: { [Op.eq]: 'pending' } } })
+  User.findAll({ where: { status: { [Op.eq]: "pending" } } })
     .then((data) => {
       res.send(data);
     })
@@ -179,33 +178,37 @@ exports.findByEmail = (req, res) => {
 exports.accept = (req, res) => {
   const id = req.params.id;
   let user = {};
-  User.findByPk(id)
-    .then((data) => {
-      if (data) {
-        user = data
-      } else {
-        res.status(404).send({
-          message: `Cannot find User with id = ${id}.`,
-        });
-      }
-    })
+  User.findByPk(id).then((data) => {
+    if (data) {
+      user = data;
+    } else {
+      res.status(404).send({
+        message: `Cannot find User with id = ${id}.`,
+      });
+    }
+  });
 
-  User.update({status: 'accepted'}, {
-    where: { id: id },
-  })
+  User.update(
+    { status: "accepted" },
+    {
+      where: { id: id },
+    }
+  )
     .then(async (number) => {
       if (number == 1) {
         // TODO: if courier add it in courier table
-        try {
-          const courier = await Courier.create({
-            courierName: user.firstName + ' ' + user.lastName,
-            userId: user.id,
-          });
-        } catch (err) {
-          console.error(err);
-          throw new Error('Failed to create courier' )
+        if (user.userType == "courier") {
+          try {
+            const courier = await Courier.create({
+              courierName: user.firstName + " " + user.lastName,
+              userId: user.id,
+            });
+          } catch (err) {
+            console.error(err);
+            throw new Error("Failed to create courier");
+          }
         }
-        
+
         res.send({
           message: "User was updated successfully.",
         });
@@ -225,9 +228,12 @@ exports.accept = (req, res) => {
 exports.decline = (req, res) => {
   const id = req.params.id;
 
-  User.update({status: 'rejected'}, {
-    where: { id: id },
-  })
+  User.update(
+    { status: "rejected" },
+    {
+      where: { id: id },
+    }
+  )
     .then((number) => {
       if (number == 1) {
         res.send({
