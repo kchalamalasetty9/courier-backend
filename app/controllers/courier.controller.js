@@ -62,9 +62,6 @@ exports.delete = async (req, res) => {
       res.status(404).json({ error: 'Courier not found' });
     } else {
       await courier.destroy();
-      db.user.destroy({
-        where: { id: courier.userId },
-      })
       res.json({ message: 'Courier deleted successfully' });
     }
   } catch (err) {

@@ -1,9 +1,9 @@
 const db = require("../models");
 const User = db.user;
 const Session = db.session;
-const Courier = db.courier;
 const Op = db.Sequelize.Op;
 const { encrypt, getSalt, hashPassword } = require("../authentication/crypto");
+const CourierController = require("./courier.controller.js");
 
 // Create and Save a new User
 exports.create = async (req, res) => {
@@ -178,34 +178,13 @@ exports.findByEmail = (req, res) => {
 // Update a User by the id in the request
 exports.accept = (req, res) => {
   const id = req.params.id;
-  let user = {};
-  User.findByPk(id)
-    .then((data) => {
-      if (data) {
-        user = data
-      } else {
-        res.status(404).send({
-          message: `Cannot find User with id = ${id}.`,
-        });
-      }
-    })
 
   User.update({status: 'accepted'}, {
     where: { id: id },
   })
-    .then(async (number) => {
+    .then((number) => {
       if (number == 1) {
         // TODO: if courier add it in courier table
-        try {
-          const courier = await Courier.create({
-            courierName: user.firstName + ' ' + user.lastName,
-            userId: user.id,
-          });
-        } catch (err) {
-          console.error(err);
-          throw new Error('Failed to create courier' )
-        }
-        
         res.send({
           message: "User was updated successfully.",
         });
