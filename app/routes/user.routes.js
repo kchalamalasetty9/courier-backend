@@ -9,11 +9,18 @@ module.exports = (app) => {
   // Retrieve all Users
   router.get("/users/", User.findAll);
 
+  // Retrieve pending Users
+  router.get("/users/pending", User.findAllPending);
+
   // Retrieve a single User with id
   router.get("/users/:id", User.findOne);
 
   // Update a User with id
   router.put("/users/:id", [authenticateRoute], User.update);
+  // Update a User with id
+  router.put("/users/:id/accept", [authenticateRoute], User.accept);
+  // Update a User with id
+  router.put("/users/:id/decline", [authenticateRoute], User.decline);
 
   // Delete a User with id
   router.delete("/users/:id", [authenticateRoute], User.delete);
