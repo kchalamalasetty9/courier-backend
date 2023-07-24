@@ -280,6 +280,10 @@ exports.update = (req, res) => {
 exports.delete = (req, res) => {
   const id = req.params.id;
 
+  Courier.destroy({
+    where: {userId: id}
+  })
+
   User.destroy({
     where: { id: id },
   })
