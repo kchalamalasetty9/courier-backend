@@ -33,6 +33,7 @@ require("./app/routes/courier.routes")(app);
 require("./app/routes/customer.routes")(app);
 require("./app/routes/ticket.routes")(app);
 require("./app/routes/company.routes")(app);
+require("./app/routes/map.routes")(app);
 
 
 // set port, listen for requests
