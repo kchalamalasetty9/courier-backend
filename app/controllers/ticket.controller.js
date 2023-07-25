@@ -13,7 +13,7 @@ exports.create = async (req, res) => {
     if (requestBody.isNewOrderBy) {
       const orderedByCustomer = await Customer.create(requestBody.newOrderedBy);
       console.log(orderedByCustomer);
-      orderedBy = orderedByCustomer.id;
+      orderedBy = orderedByCustomer.dataValues.customerNumber;
     } else {
       orderedBy = requestBody.orderedBy.customerNumber;
     }
@@ -21,7 +21,7 @@ exports.create = async (req, res) => {
     if (requestBody.isNewOrderTo) {
       const orderedToCustomer = await Customer.create(requestBody.newOrderedTo);
       console.log(orderedToCustomer);
-      orderedTo = orderedToCustomer.id;
+      orderedTo = orderedToCustomer.dataValues.customerNumber;
     } else {
       orderedTo = requestBody.orderedTo.customerNumber;
     }
