@@ -35,8 +35,12 @@ db.session.belongsTo(
   { foreignKey: { allowNull: false }, onDelete: "CASCADE" }
 );
 
-db.ticket.belongsTo(db.customer, { foreignKey: "orderedBy", as: "customer" });
-db.customer.hasMany(db.ticket, { foreignKey: "orderedBy", as: "tickets" });
+db.ticket.belongsTo(db.customer, { foreignKey: "orderedBy", as: "orderedByCustomer" });
+db.ticket.belongsTo(db.customer, { foreignKey: "orderedTo", as: "orderedToCustomer" });
+db.customer.hasMany(db.ticket, { foreignKey: "orderedBy", as: "orderedByTickets" })
+db.customer.hasMany(db.ticket, { foreignKey: "orderedTo", as: "orderedToTickets" })
+
+
 
 db.ticket.belongsTo(db.courier, { foreignKey: "courierNumber", as: "courier" });
 db.courier.hasMany(db.ticket, { foreignKey: "courierNumber", as: "tickets" });

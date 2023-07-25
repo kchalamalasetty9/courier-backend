@@ -5,14 +5,6 @@ module.exports = (sequelize, Sequelize) => {
       primaryKey: true,
       autoIncrement: true,
     },
-    orderedBy: {
-      type: Sequelize.INTEGER,
-      allowNull: false,
-    },
-    courierNumber: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
     estimatedDeliveryTime: {
       type: Sequelize.DATE,
       allowNull: true,
@@ -21,16 +13,12 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.FLOAT,
       allowNull: true,
     },
-    orderedTo: {
-      type: Sequelize.INTEGER,
-      allowNull: true,
-    },
-    status: {
+    status: { //pending, ordered, delivered, canceled
       type: Sequelize.STRING,
-      allowNull: true,
+      allowNull: false,
     },
     requestedPickupTime: {
-      type: Sequelize.STRING,
+      type: Sequelize.DATE,
       allowNull: true,
     },
     requestedPickupLocation: {
