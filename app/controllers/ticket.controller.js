@@ -81,7 +81,7 @@ exports.update = async (req, res) => {
     if (!ticket) {
       res.status(404).json({ error: "Ticket not found" });
     } else {
-      await ticket.update(req.body);
+      await ticket.update({ ...req.body, courierNumber: req.body.selectedCourier.courierNumber});
       res.json(ticket);
     }
   } catch (err) {
