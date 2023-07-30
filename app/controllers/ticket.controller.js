@@ -1,7 +1,10 @@
 const db = require("../models");
+const { Graph } = require("../utils/Graph");
 const Ticket = db.ticket;
 const Customer = db.customer;
 const Courier = db.courier;
+const Vertex = db.vertex;
+const Edge = db.edge;
 
 // Create a ticket
 exports.create = async (req, res) => {
@@ -31,7 +34,7 @@ exports.create = async (req, res) => {
       orderedTo,
       courierNumber: requestBody.selectedCourier.courierNumber,
       status: "pending",
-      requestedPickupTime: requestBody.requestedPickupTime
+      requestedPickupTime: requestBody.requestedPickupTime,
     };
 
     const response = await Ticket.create(ticket);
@@ -47,10 +50,10 @@ exports.readAll = async (req, res) => {
   try {
     const tickets = await Ticket.findAll({
       include: [
-        { model: Customer, as: 'orderedByCustomer' },
-        { model: Customer, as: 'orderedToCustomer' },
-        { model: Courier, as: 'courier'}
-      ]
+        { model: Customer, as: "orderedByCustomer" },
+        { model: Customer, as: "orderedToCustomer" },
+        { model: Courier, as: "courier" },
+      ],
     });
     res.json(tickets);
   } catch (err) {
@@ -81,7 +84,10 @@ exports.update = async (req, res) => {
     if (!ticket) {
       res.status(404).json({ error: "Ticket not found" });
     } else {
-      await ticket.update({ ...req.body, courierNumber: req.body.selectedCourier.courierNumber});
+      await ticket.update({
+        ...req.body,
+        courierNumber: req.body.selectedCourier.courierNumber,
+      });
       res.json(ticket);
     }
   } catch (err) {
@@ -103,5 +109,32 @@ exports.delete = async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Failed to delete ticket" });
+  }
+};
+
+exports.getEstimatePriceAndInstructions = async (req, res) => {
+  try {
+    const sourceNode = req.query.sourceNode;
+    const destinationNode = req.query.destinationNode;
+    const officeNode = "C3"; // TODO: Get from companyInfoTable
+    let g = new Graph();
+    const vertices = await Vertex.findAll({ where: null });
+    const edges = await Edge.findAll({ where: null });
+    vertices.map((x) => g.addVertex(x.dataValues.name));
+    edges.map((x) =>
+      g.addEdge(x.dataValues.sourceVertexId, x.dataValues.destinationVertexId)
+    );
+
+    const officeSPT = g.shortestPathTraversal(officeNode);
+
+    const sourceSPT = g.shortestPathTraversal(sourceNode);
+    const destinationSPT = g.shortestPathTraversal(destinationNode);
+    res.json({
+      o: officeSPT[sourceNode], 
+      s: sourceSPT[destinationNode], 
+      d: destinationSPT[officeNode]
+    });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
   }
 };
