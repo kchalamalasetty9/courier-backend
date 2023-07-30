@@ -58,8 +58,10 @@ db.user.hasOne(
 
 db.edge.belongsTo(db.vertex, {
   as: "sourceVertex",
-  foreignKey: "sourceVertexId",
+  foreignKey: "sourceVertexId"
+  
 });
+
 db.edge.belongsTo(db.vertex, {
   as: "destinationVertex",
   foreignKey: "destinationVertexId",

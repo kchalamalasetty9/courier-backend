@@ -134,3 +134,148 @@ exports.getMap = async (req, res) => {
   }
 
 }
+
+exports.postVertices = async (req, res) => {
+  try {
+    const { name } = req.body;
+    const vertex = await Vertex.create({ name });
+    res.status(201).json(vertex);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getVertices =  async (req, res) => {
+  try {
+    const vertices = await Vertex.findAll();
+    res.status(200).json(vertices);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getVerticesByName = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const vertex = await Vertex.findByPk(name);
+    if (!vertex) {
+      return res.status(404).json({ message: 'Vertex not found' });
+    }
+    res.status(200).json(vertex);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.putVertices = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const { newName } = req.body;
+    const vertex = await Vertex.findByPk(name);
+    if (!vertex) {
+      return res.status(404).json({ message: 'Vertex not found' });
+    }
+    
+    const newVertex = await Vertex.create({ name: newName });
+    await newVertex.save();
+
+      await Edge.update(
+        { sourceVertexId: newName },
+        { where: { sourceVertexId: name } }
+      );
+      await Edge.update(
+        { destinationVertexId: newName },
+        { where: { destinationVertexId: name } }
+      );
+    
+    await vertex.destroy();
+    res.status(200).json(newVertex);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteVertices = async (req, res) => {
+  try {
+    const { name } = req.params;
+    const vertex = await Vertex.findByPk(name);
+    if (!vertex) {
+      return res.status(404).json({ message: 'Vertex not found' });
+    }
+
+    await Edge.destroy({
+      where: {
+        [db.Sequelize.Op.or]: [{ sourceVertexId: name }, { destinationVertexId: name }],
+      },
+    });
+
+    await vertex.destroy();
+    res.status(200).json({ message: 'successfully deleted'});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.postEdge = async (req, res) => {
+  try {
+    const { name, sourceVertexId, destinationVertexId } = req.body;
+    const edge = await Edge.create({ name, sourceVertexId, destinationVertexId });
+    res.status(201).json(edge);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getEdges =  async (req, res) => {
+  try {
+    const edges = await Edge.findAll();
+    res.status(200).json(edges);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.getEdgeById =  async (req, res) => {
+  try {
+    const { id } = req.params;
+    const edge = await Edge.findByPk(id);
+    if (!edge) {
+      return res.status(404).json({ message: 'Edge not found' });
+    }
+    res.status(200).json(edge);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.putEdge =  async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, destinationVertexId, sourceVertexId } = req.body;
+    const edge = await Edge.findByPk(id);
+    if (!edge) {
+      return res.status(404).json({ message: 'Edge not found' });
+    }
+    edge.name = name;
+    edge.sourceVertexId = sourceVertexId;
+    edge.destinationVertexId = destinationVertexId;
+    await edge.save();
+    res.status(200).json(edge);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
+exports.deleteEdge =  async (req, res) => {
+  try {
+    const { id } = req.params;
+    const edge = await Edge.findByPk(id);
+    if (!edge) {
+      return res.status(404).json({ message: 'Edge not found' });
+    }
+    await edge.destroy();
+    res.status(200).json({ message: 'successfully deleted'});
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
