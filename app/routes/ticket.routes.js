@@ -8,6 +8,7 @@ module.exports = (app) => {
   router.get("/tickets/:id",ticket.get);
   router.put("/tickets/:id",ticket.update);
   router.delete("/tickets/:id",ticket.delete);
+  router.get("/getEstimates",ticket.getEstimatePriceAndInstructions);
 
   app.use("/courierapi", router);
 };
