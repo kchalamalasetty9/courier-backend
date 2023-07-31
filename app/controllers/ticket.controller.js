@@ -207,3 +207,38 @@ exports.updateDeliveryStatus = async (req, res) => {
     res.status(500).json({ error: "Failed to update ticket" });
   }
 };
+
+
+exports.generateCompanyReport = async (req, res) => {
+  try {
+    // Fetch the company report data
+    const reportData = await Ticket.findAll({
+      attributes: [
+        'orderedBy',
+        [db.Sequelize.fn('COUNT', db.Sequelize.col('ticketId')), 'numTickets'],
+        [db.Sequelize.fn('SUM', db.Sequelize.col('quotedPrice')), 'totalBilling'],
+      ],
+      include: [
+        {
+          model: Customer,
+          as: 'orderedByCustomer',
+          attributes: ['customerName'],
+        },
+      ],
+      group: ['orderedBy'],
+    });
+
+    // Process the data to prepare the report
+    const companyReport = reportData.map((entry) => ({
+      orderedBy: entry.orderedByCustomer.customerName,
+      numTickets: entry.dataValues.numTickets,
+      totalBilling: entry.dataValues.totalBilling,
+    }));
+
+    res.json(companyReport);
+  } catch (error) {
+    console.error('Error generating company report:', error);
+    res.status(500).json({ error: 'Failed to generate company report' });
+  }
+};
+
