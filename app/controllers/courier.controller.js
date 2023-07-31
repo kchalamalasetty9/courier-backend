@@ -1,6 +1,6 @@
 const db = require("../models");
 const Courier = db.courier;
-const Customer = db.customer
+const Customer = db.customer;
 
 // Create a courier
 exports.create = async (req, res) => {
@@ -126,14 +126,13 @@ exports.getTicketsByUserId = async (req, res) => {
     res.json(tickets);
   } catch (error) {
     console.error("Error fetching tickets by courier ID:", error);
-    
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
 
 exports.getAvaliableTicketsByUserId = async (req, res) => {
   try {
-
     const tickets = await db.ticket.findAll({
       where: {
         courierNumber: { [db.Sequelize.Op.eq]: null },
@@ -147,7 +146,32 @@ exports.getAvaliableTicketsByUserId = async (req, res) => {
     res.json(tickets);
   } catch (error) {
     console.error("Error fetching tickets by courier ID:", error);
-    
+
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+exports.takeOrder = async (req, res) => {
+  try {
+    const { orderId } = req.body;
+    const courier = await db.courier.findOne({
+      where: {
+        userId: req.params.userId,
+      },
+    });
+
+    const ticket = await db.ticket.findByPk(orderId);
+    if (!ticket) {
+      res.status(404).json({ error: "Ticket not found" });
+    } else {
+      await ticket.update({
+        ...req.body,
+        courierNumber: courier.courierNumber,
+      });
+      res.json(ticket);
+    }
+  } catch (error) {
+    console.error("Error fetching tickets by courier ID:", error);
+
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
