@@ -32,7 +32,7 @@ exports.create = async (req, res) => {
     const ticket = {
       orderedBy,
       orderedTo,
-      courierNumber: requestBody.selectedCourier.courierNumber,
+      courierNumber: requestBody?.selectedCourier?.courierNumber,
       status: "pending",
       requestedPickupTime: requestBody.requestedPickupTime,
     };

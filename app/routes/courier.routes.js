@@ -5,6 +5,7 @@ module.exports = (app) => {
 
   router.post("/couriers", courier.create);
   router.get("/couriers", courier.readAll);
+  router.get("/available-couriers", courier.availableCourier);
   router.get("/couriers/:id", courier.get);
   router.put("/couriers/:id", courier.update);
   router.delete("/couriers/:id", courier.delete);
