@@ -10,6 +10,7 @@ module.exports = (app) => {
   router.put("/tickets/:id/update-status",ticket.updateDeliveryStatus);
   router.delete("/tickets/:id",ticket.delete);
   router.get("/getEstimates",ticket.getEstimatePriceAndInstructions);
+  router.get('/company-report', ticket.generateCompanyReport);
 
   app.use("/courierapi", router);
 };
