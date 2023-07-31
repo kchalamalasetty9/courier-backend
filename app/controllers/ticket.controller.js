@@ -181,6 +181,13 @@ exports.updateDeliveryStatus = async (req, res) => {
             updatedFields.onTimeBonus = "no"
           }
           break;
+        case "canceled":
+          updatedFields.actualStartTime = null;
+          updatedFields.actualPickupTime = null;
+          updatedFields.actualDeliveryTime = null;
+          updatedFields.onTimeBonus = "no"
+          updatedFields.status = "canceled"
+          break;
 
         default:
           break;
