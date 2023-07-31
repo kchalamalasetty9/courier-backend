@@ -1,5 +1,6 @@
 const db = require("../models");
 const Courier = db.courier;
+const Customer = db.customer
 
 // Create a courier
 exports.create = async (req, res) => {
@@ -80,7 +81,7 @@ exports.availableCourier = async (req, res) => {
         {
           model: db.ticket,
           as: "tickets",
-          where: { status: { [db.Sequelize.Op.eq]: "pending" } }, // Filtering out couriers with status 'pending'
+          where: { status: { [db.Sequelize.Op.ne]: "delivered" } }, // Filtering out couriers with status 'pending'
           required: false,
         },
       ],
@@ -116,6 +117,11 @@ exports.getTicketsByUserId = async (req, res) => {
       where: {
         courierNumber: c.courierNumber,
       },
+      include: [
+        { model: Customer, as: "orderedByCustomer" },
+        { model: Customer, as: "orderedToCustomer" },
+        { model: Courier, as: "courier" },
+      ],
     });
     res.json(tickets);
   } catch (error) {
@@ -132,6 +138,11 @@ exports.getAvaliableTicketsByUserId = async (req, res) => {
       where: {
         courierNumber: { [db.Sequelize.Op.eq]: null },
       },
+      include: [
+        { model: Customer, as: "orderedByCustomer" },
+        { model: Customer, as: "orderedToCustomer" },
+        { model: Courier, as: "courier" },
+      ],
     });
     res.json(tickets);
   } catch (error) {
