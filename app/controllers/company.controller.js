@@ -3,9 +3,7 @@ const Company = db.company
 
 exports.createCompany = async (req,res) => {
   try {
-
-    const { key,value } = req.body;
-    const company = await Company.create({ key,value });
+    const company = await Company.create(req.body);
     res.json(company);
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -42,13 +40,11 @@ exports.getCompanyById = async (req,res) => {
 exports.updateCompany = async (req,res) => {
   try {
     const { id } = req.params;
-    const { value } = req.body;
     const company = await Company.findByPk(id);
     if (!company) {
       throw new Error(  'Company not found');
     }
-    company.value = value;
-    await company.save();
+    await company.update(req.body);
     res.json(company);
   } catch (error) {
     res.status(500).json({ error: error.message });
