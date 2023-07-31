@@ -13,7 +13,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.FLOAT,
       allowNull: true,
     },
-    status: { //pending, driver-left-facility, driver-picked-up-order, out-for-delivery, delivered, canceled
+    status: { //pending, driver-left-facility, driver-picked-up-order, delivered, canceled
       type: Sequelize.STRING,
       allowNull: false,
     },

@@ -28,12 +28,6 @@ exports.create = async (req, res) => {
     } else {
       orderedTo = requestBody.orderedTo.customerNumber;
     }
-// TODO:
-// Estimated Start Time:
-// Estimated Pickup Time:
-// Actual Start Time:
-// Actual Pickup Time:
-// Actual Delivery Time:
 
     const ticket = {
       orderedBy,
@@ -146,11 +140,63 @@ exports.getEstimatePriceAndInstructions = async (req, res) => {
     const sourceSPT = g.shortestPathTraversal(sourceNode);
     const destinationSPT = g.shortestPathTraversal(destinationNode);
     res.json({
-      o: officeSPT[sourceNode], 
-      s: sourceSPT[destinationNode], 
-      d: destinationSPT[officeNode]
+      o: officeSPT[sourceNode],
+      s: sourceSPT[destinationNode],
+      d: destinationSPT[officeNode],
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
+  }
+};
+
+exports.updateDeliveryStatus = async (req, res) => {
+  try {
+    const requestBody = req.body;
+    const updatedFields = {};
+    if (requestBody.status) {
+      updatedFields.status = requestBody.status
+      switch (requestBody.status) {
+        //         driver-left-facility -> ast, null,null
+        // driver-picked-up-order -> ast, apt, null
+        // Delivered -> ast->apt ->adt
+        case "pending":
+          updatedFields.actualStartTime = null;
+          updatedFields.actualPickupTime = null;
+          updatedFields.actualDeliveryTime = null;
+          break;
+        case "driver-left-facility":
+          updatedFields.actualStartTime = new Date().toISOString();
+          updatedFields.actualPickupTime = null;
+          updatedFields.actualDeliveryTime = null;
+          break;
+        case "driver-picked-up-order":
+          updatedFields.actualPickupTime = new Date().toISOString();
+          updatedFields.actualDeliveryTime = null;
+          break;
+        case "delivered":
+          updatedFields.actualDeliveryTime = new Date().toISOString();
+          if(requestBody.estimatedDeliveryTime >= updatedFields.actualDeliveryTime){
+            updatedFields.onTimeBonus = "yes"
+          } else {
+            updatedFields.onTimeBonus = "no"
+          }
+          break;
+
+        default:
+          break;
+      }
+    }
+    const ticket = await Ticket.findByPk(req.params.id);
+    if (!ticket) {
+      res.status(404).json({ error: "Ticket not found" });
+    } else {
+      await ticket.update({
+        ...updatedFields,
+      });
+      res.json(ticket);
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Failed to update ticket" });
   }
 };
