@@ -28,6 +28,12 @@ exports.create = async (req, res) => {
     } else {
       orderedTo = requestBody.orderedTo.customerNumber;
     }
+// TODO:
+// Estimated Start Time:
+// Estimated Pickup Time:
+// Actual Start Time:
+// Actual Pickup Time:
+// Actual Delivery Time:
 
     const ticket = {
       orderedBy,
@@ -35,6 +41,16 @@ exports.create = async (req, res) => {
       courierNumber: requestBody?.selectedCourier?.courierNumber,
       status: "pending",
       requestedPickupTime: requestBody.requestedPickupTime,
+      estimatedStartTime: requestBody.requestedPickupTime,
+      quotedPrice: requestBody.quotedPrice,
+      estimatedDeliveryTime: requestBody.estimatedDeliveryTime,
+      estimatedPickupTime: requestBody.estimatedPickupTime,
+      requestedPickupLocation: requestBody.requestedPickupLocation,
+      dropOffLocation: requestBody.dropOffLocation,
+      distance: requestBody.distance,
+      routeToDeliveryFromPickup: requestBody.routeToDeliveryFromPickup,
+      routeToOfficeFromDelivery: requestBody.routeToOfficeFromDelivery,
+      routeToPickupFromOffice: requestBody.routeToPickupFromOffice,
     };
 
     const response = await Ticket.create(ticket);

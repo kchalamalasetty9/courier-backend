@@ -37,6 +37,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.STRING,
       allowNull: true,
     },
+
     estimatedStartTime: {
       type: Sequelize.DATE,
       allowNull: true,
@@ -57,6 +58,7 @@ module.exports = (sequelize, Sequelize) => {
       type: Sequelize.DATE,
       allowNull: true,
     },
+
     routeToPickupFromOffice: {
       type: Sequelize.STRING,
       allowNull: true,
