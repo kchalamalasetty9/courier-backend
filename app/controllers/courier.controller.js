@@ -79,21 +79,64 @@ exports.availableCourier = async (req, res) => {
       include: [
         {
           model: db.ticket,
-          as: 'tickets',
-          where: { status: { [db.Sequelize.Op.eq]: 'pending' } }, // Filtering out couriers with status 'pending'
+          as: "tickets",
+          where: { status: { [db.Sequelize.Op.eq]: "pending" } }, // Filtering out couriers with status 'pending'
           required: false,
         },
       ],
-      where: { '$tickets.ticketId$': { [db.Sequelize.Op.ne]: null } },
+      where: { "$tickets.ticketId$": { [db.Sequelize.Op.ne]: null } },
     });
 
     const couriers = await Courier.findAll({ where: null });
-    
-    const availableCouriers = couriers.filter(e => !occupiedCouriers.some(o => o.courierNumber === e.courierNumber))
+
+    const availableCouriers = couriers.filter(
+      (e) => !occupiedCouriers.some((o) => o.courierNumber === e.courierNumber)
+    );
 
     res.json(availableCouriers);
   } catch (error) {
     console.error("Error fetching available couriers:", error);
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.getTicketsByUserId = async (req, res) => {
+  try {
+    const c = await db.courier.findOne({
+      where: {
+        userId: req.params.userId,
+      },
+    });
+
+    if (!c) {
+      // If the courier is not found, return an empty array or throw an error
+      return [];
+    }
+    const tickets = await db.ticket.findAll({
+      where: {
+        courierNumber: c.courierNumber,
+      },
+    });
+    res.json(tickets);
+  } catch (error) {
+    console.error("Error fetching tickets by courier ID:", error);
+    
+    res.status(500).json({ message: "Internal Server Error" });
+  }
+};
+
+exports.getAvaliableTicketsByUserId = async (req, res) => {
+  try {
+
+    const tickets = await db.ticket.findAll({
+      where: {
+        courierNumber: { [db.Sequelize.Op.eq]: null },
+      },
+    });
+    res.json(tickets);
+  } catch (error) {
+    console.error("Error fetching tickets by courier ID:", error);
+    
     res.status(500).json({ message: "Internal Server Error" });
   }
 };
