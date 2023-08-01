@@ -11,6 +11,7 @@ module.exports = (app) => {
   router.delete("/tickets/:id",ticket.delete);
   router.get("/getEstimates",ticket.getEstimatePriceAndInstructions);
   router.get('/company-report', ticket.generateCompanyReport);
+  router.get('/courier-bonuses/:courierNumber', ticket.courierBonusReport);
 
   app.use("/courierapi", router);
 };
