@@ -81,7 +81,7 @@ exports.availableCourier = async (req, res) => {
         {
           model: db.ticket,
           as: "tickets",
-          where: { status: { [db.Sequelize.Op.ne]: "delivered" }, [db.Sequelize.Op.ne]: "canceled"  }, 
+          where: { status: { [db.Sequelize.Op.ne]: "delivered", [db.Sequelize.Op.ne]: "canceled" } }, 
           required: false,
         },
       ],
