@@ -12,6 +12,7 @@ module.exports = (app) => {
   router.get("/getEstimates",ticket.getEstimatePriceAndInstructions);
   router.get('/company-report', ticket.generateCompanyReport);
   router.get('/courier-bonuses/:courierNumber', ticket.courierBonusReport);
+  router.get('/generate-invoices/:customerId', ticket.generateInvoice);
 
   app.use("/courierapi", router);
 };

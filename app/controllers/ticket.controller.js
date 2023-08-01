@@ -276,3 +276,25 @@ exports.courierBonusReport = async (req, res) => {
     res.status(500).json({ error: "Internal server error" });
   }
 };
+
+exports.generateInvoice = async (req, res) => {
+  try {
+    const customerId = req.params.customerId;
+    const customerTickets = await db.ticket.findAll({
+      where: {
+        orderedBy: customerId,
+      },
+      include: [
+        {
+          model: db.customer,
+          as: 'orderedToCustomer',
+        },
+      ],
+    });
+
+    res.json(customerTickets);
+  } catch (error) {
+    console.error('Error generating invoices:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+}
