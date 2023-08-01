@@ -154,7 +154,7 @@ exports.updateDeliveryStatus = async (req, res) => {
     const requestBody = req.body;
     const updatedFields = {};
     if (requestBody.status) {
-      updatedFields.status = requestBody.status
+      updatedFields.status = requestBody.status;
       switch (requestBody.status) {
         //         driver-left-facility -> ast, null,null
         // driver-picked-up-order -> ast, apt, null
@@ -175,18 +175,21 @@ exports.updateDeliveryStatus = async (req, res) => {
           break;
         case "delivered":
           updatedFields.actualDeliveryTime = new Date().toISOString();
-          if(requestBody.estimatedDeliveryTime >= updatedFields.actualDeliveryTime){
-            updatedFields.onTimeBonus = "yes"
+          if (
+            requestBody.estimatedDeliveryTime >=
+            updatedFields.actualDeliveryTime
+          ) {
+            updatedFields.onTimeBonus = "yes";
           } else {
-            updatedFields.onTimeBonus = "no"
+            updatedFields.onTimeBonus = "no";
           }
           break;
         case "canceled":
           updatedFields.actualStartTime = null;
           updatedFields.actualPickupTime = null;
           updatedFields.actualDeliveryTime = null;
-          updatedFields.onTimeBonus = "no"
-          updatedFields.status = "canceled"
+          updatedFields.onTimeBonus = "no";
+          updatedFields.status = "canceled";
           break;
 
         default:
@@ -208,24 +211,26 @@ exports.updateDeliveryStatus = async (req, res) => {
   }
 };
 
-
 exports.generateCompanyReport = async (req, res) => {
   try {
     // Fetch the company report data
     const reportData = await Ticket.findAll({
       attributes: [
-        'orderedBy',
-        [db.Sequelize.fn('COUNT', db.Sequelize.col('ticketId')), 'numTickets'],
-        [db.Sequelize.fn('SUM', db.Sequelize.col('quotedPrice')), 'totalBilling'],
+        "orderedBy",
+        [db.Sequelize.fn("COUNT", db.Sequelize.col("ticketId")), "numTickets"],
+        [
+          db.Sequelize.fn("SUM", db.Sequelize.col("quotedPrice")),
+          "totalBilling",
+        ],
       ],
       include: [
         {
           model: Customer,
-          as: 'orderedByCustomer',
-          attributes: ['customerName'],
+          as: "orderedByCustomer",
+          attributes: ["customerName"],
         },
       ],
-      group: ['orderedBy'],
+      group: ["orderedBy"],
     });
 
     // Process the data to prepare the report
@@ -237,8 +242,37 @@ exports.generateCompanyReport = async (req, res) => {
 
     res.json(companyReport);
   } catch (error) {
-    console.error('Error generating company report:', error);
-    res.status(500).json({ error: 'Failed to generate company report' });
+    console.error("Error generating company report:", error);
+    res.status(500).json({ error: "Failed to generate company report" });
   }
 };
 
+exports.courierBonusReport = async (req, res) => {
+  const courierNumber = req.params.courierNumber;
+
+  try {
+    
+    const courierBonuses = await db.ticket.findAll({
+      where: {
+        courierNumber: courierNumber,
+      },
+      include: [
+        {
+          model: db.customer,
+          as: "orderedByCustomer",
+          attributes: ["customerNumber", "customerName"], 
+        },
+        {
+          model: db.customer,
+          as: "orderedToCustomer",
+          attributes: ["customerNumber", "customerName"], 
+        },
+      ],
+    });
+
+    res.json(courierBonuses);
+  } catch (error) {
+    console.error("Error fetching courier bonuses:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
